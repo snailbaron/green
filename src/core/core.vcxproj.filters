@@ -37,9 +37,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="strings.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="strings.json" />
+    <None Include="strings\english.json" />
   </ItemGroup>
 </Project>
