@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <list>
+#include <functional>
 
 /**
     Process
@@ -32,17 +33,17 @@ public:
         Failure,
     };
 
-    Process::Process()
+    Process()
         : _state(Process::State::Uninitialized)
         , _result(Process::Result::None)
     { }
 
     virtual void start();
-    virtual void update(double deltaSec) = 0;
+    virtual void update(double delta_sec);
 
     void finish(Result result = Result::None);
-    std::shared_ptr<Process> next(std::shared_ptr<Process> next);
-    void attach_on_failure(std::shared_ptr<Process> next);
+    std::shared_ptr<Process> and(std::shared_ptr<Process> next);
+    std::shared_ptr<Process> or(std::shared_ptr<Process> next);
     
     State state() const { return _state; }
     Result result() const { return _result; }

@@ -13,21 +13,18 @@ public:
         , _passed(0.0)
     { }
 
-    virtual void update(double delta_sec);
+    virtual void update(double delta_sec)
+    {
+        _passed += delta_sec;
+        if (_passed >= _delay) {
+            finish(Result::Success);
+        }
+    }
 
 private:
     double _delay;
     double _passed;
 };
-
-void DelayProcess::update(double delta_sec)
-{
-    _passed += delta_sec;
-    if (_passed >= _delay) {
-        finish(Result::Success);
-    }
-}
-
 
 class PrintProcess : public Process {
 public:
@@ -35,26 +32,37 @@ public:
         : _msg(msg)
     { }
 
-    virtual void update(double delta_sec);
+    virtual void update(double delta_sec)
+    {
+        std::cout << _msg << std::endl;
+        finish(Result::Success);
+    }
 
 private:
     std::string _msg;
 };
 
-void PrintProcess::update(double delta_sec)
-{
-    std::cout << _msg << std::endl;
-    finish(Result::Success);
-}
+class RandomYesNoProcess : public Process {
+public:
+    virtual void update(double delta_sec)
+    {
+        if (rand() % 2) {
+            finish(Result::Success);
+        } else {
+            finish(Result::Failure);
+        }
+    }
+};
 
 
 int main()
 {
     ProcessManager mgr;
     mgr.attach_process(std::make_shared<PrintProcess>("before"))
-        ->next(std::make_shared<DelayProcess>(1.0))
-        ->next(std::make_shared<PrintProcess>("after"))
-        ->next(std::make_shared<DelayProcess>(0.5));
+        ->and(std::make_shared<DelayProcess>(1.0))
+        ->and(std::make_shared<PrintProcess>("after"))
+        ->and(std::make_shared<DelayProcess>(0.5));
 
     mgr.roll();
+
 }

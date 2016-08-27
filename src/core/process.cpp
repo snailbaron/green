@@ -24,21 +24,27 @@ void Process::start()
     _state = State::Running;
 }
 
-void Process::finish(Result result)
+void Process::update(double delta_sec)
 {
-    _result = result;
-    _state = State::Finished;
+    finish(Result::Success);
 }
 
-std::shared_ptr<Process> Process::next(std::shared_ptr<Process> next)
+void Process::finish(Result result)
+{
+    _state = State::Finished;
+    _result = result;
+}
+
+std::shared_ptr<Process> Process::and(std::shared_ptr<Process> next)
 {
     _next_on_success = next;
     return next;
 }
 
-void Process::attach_on_failure(std::shared_ptr<Process> next)
+std::shared_ptr<Process> Process::or(std::shared_ptr<Process> next)
 {
     _next_on_failure = next;
+    return next;
 }
 
 
