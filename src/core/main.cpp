@@ -51,19 +51,10 @@ void PrintProcess::update(double delta_sec)
 int main()
 {
     ProcessManager mgr;
-    {
-        std::shared_ptr<Process> delay(new DelayProcess(2.0));
-        mgr.attach_process(delay)->attach_on_success(std::make_shared<PrintProcess>("onetwo"));
-        
-        //delay->attach_on_success(std::make_shared<PrintProcess>("onetwo"));
-    }
+    mgr.attach_process(std::make_shared<PrintProcess>("before"))
+        ->next(std::make_shared<DelayProcess>(1.0))
+        ->next(std::make_shared<PrintProcess>("after"))
+        ->next(std::make_shared<DelayProcess>(0.5));
 
-    auto prev_time = std::chrono::system_clock::now();
-    while (mgr.is_active()) {
-        auto time = std::chrono::system_clock::now();
-        std::chrono::duration<double> delta = time - prev_time;
-        prev_time = time;
-
-        mgr.update(delta.count());
-    }
+    mgr.roll();
 }

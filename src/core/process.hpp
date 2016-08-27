@@ -41,7 +41,7 @@ public:
     virtual void update(double deltaSec) = 0;
 
     void finish(Result result = Result::None);
-    void attach_on_success(std::shared_ptr<Process> next);
+    std::shared_ptr<Process> next(std::shared_ptr<Process> next);
     void attach_on_failure(std::shared_ptr<Process> next);
     
     State state() const { return _state; }
@@ -70,6 +70,8 @@ public:
     std::shared_ptr<Process> attach_process(std::shared_ptr<Process> process);
 
     bool is_active() const { return !_processes.empty(); }
+
+    void roll();
 
 private:
     std::list<std::shared_ptr<Process>> _processes;

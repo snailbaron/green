@@ -1,4 +1,5 @@
 #include "process.hpp"
+#include <chrono>
 
 /**
     Process implementation
@@ -29,9 +30,10 @@ void Process::finish(Result result)
     _state = State::Finished;
 }
 
-void Process::attach_on_success(std::shared_ptr<Process> next)
+std::shared_ptr<Process> Process::next(std::shared_ptr<Process> next)
 {
     _next_on_success = next;
+    return next;
 }
 
 void Process::attach_on_failure(std::shared_ptr<Process> next)
@@ -84,4 +86,16 @@ std::shared_ptr<Process> ProcessManager::attach_process(std::shared_ptr<Process>
 {
     _processes.push_back(process);
     return process;
+}
+
+void ProcessManager::roll()
+{
+    auto prev_time = std::chrono::system_clock::now();
+    while (is_active()) {
+        auto time = std::chrono::system_clock::now();
+        std::chrono::duration<double> delta = time - prev_time;
+        prev_time = time;
+
+        update(delta.count());
+    }
 }
